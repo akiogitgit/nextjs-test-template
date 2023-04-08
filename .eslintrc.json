@@ -8,7 +8,7 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:storybook/recommended"
   ],
-  "ignorePatterns": ["jest.config.js", "jest.setup.js"],
+  "ignorePatterns": ["jest.config.js", "jest.setup.js", "src/mocks/worker.ts"],
   // ファイルに、個別のESLintの設定をする
   "overrides": [
     {
