@@ -1,0 +1,7 @@
+{
+  "eslint.enable": true,
+  // 保存でESLint実行
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}

@@ -1,3 +1,122 @@
 {
-  "extends": "next/core-web-vitals"
+  // ルールや設定を提供するためのパッケージがプラグイン。適応はされない
+  "plugins": ["@typescript-eslint", "unused-imports", "import", "filenames"],
+  // 別の設定ファイルの設定を適応
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:storybook/recommended"
+  ],
+  "ignorePatterns": ["jest.config.js", "jest.setup.js"],
+  // ファイルに、個別のESLintの設定をする
+  "overrides": [
+    {
+      // __tests__内だけ testのルールを適用
+      "files": [
+        "**/__tests__/**/*.[jt]s?(x)",
+        "**/?(*.)+(spec|test).[jt]s?(x)"
+      ],
+      "extends": ["plugin:testing-library/react"]
+    }
+    // {
+    //   // componentsはパスカルケース
+    //   "files": ["src/components/**"],
+    //   "rules": { "filenames/match-regex": ["error", "^([A-Z][a-z0-9]*)+$"] }
+    // },
+    // {
+    //   // hooksはuse + パスカルケース
+    //   "files": ["src/hooks/**"],
+    //   "rules": { "filenames/match-regex": ["error", "^use([A-Z][a-z0-9]*)+$"] }
+    // },
+    // {
+    //   // pagesはケバブケース、[], _にも対応
+    //   "files": ["src/pages/**"],
+    //   "rules": {
+    //     "filenames/match-regex": ["error", "^([a-z_[])([a-z]+-?)+(])?$"]
+    //   }
+    // },
+    // {
+    //   // typesはキャメルケース
+    //   "files": ["src/types/**"],
+    //   "rules": {
+    //     "filenames/match-regex": ["error", "^[a-z][a-zA-Z]+$"]
+    //   }
+    // },
+    // {
+    //   // utilsはキャメルケース。useから始めない
+    //   "files": ["src/utils/**"],
+    //   "rules": {
+    //     "filenames/match-regex": ["error", "^(?!use)[a-z][a-zA-Z]+$"]
+    //   }
+    // }
+  ],
+  // /* eslint-disable */みたいの使えなくする
+  "noInlineConfig": true,
+  "root": true,
+  // ESLintが生成出来ないパーサーを追加、パーサーはコードを解析してASTを生成する
+  "parser": "@typescript-eslint/parser",
+  // パーサーに渡されるオプションを指定
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module", // ES Modules形式のコードを解析
+    "project": "./tsconfig.json" // TSの設定を読み込みTSを解析
+  },
+  "rules": {
+    "@typescript-eslint/explicit-module-boundary-types": "off", // 関数の型定義ないとエラー
+    "unused-imports/no-unused-imports": "error", // これで自動で削除出来る！
+    "no-unused-vars": "off",
+
+    // importのsort
+    "import/order": [
+      "error",
+      {
+        // importの種類で順番を設定
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          ["sibling", "parent"],
+          "object"
+        ],
+        // 効かない。個別のグループ設定
+        "pathGroups": [
+          {
+            "pattern": "zod",
+            "group": "internal",
+            "position": "after"
+          }
+        ],
+        // pathGroupsの pattern の判定が影響されないグループ
+        "pathGroupsExcludedImportTypes": ["builtin"],
+        "newlines-between": "always", // グループ毎に感覚を空ける
+        "alphabetize": {
+          "order": "asc" // グループ内を昇順で並べる
+        }
+      }
+    ],
+    // "import/no-restricted-paths": "error"
+    "import/no-restricted-paths": [
+      "error",
+      {
+        "zones": [
+          // pagesをcomponentsで呼ぶとエラー
+          {
+            "from": "src/pages/**",
+            "target": "src/components/**"
+          },
+          // componentsをutilsで呼ぶとエラー
+          {
+            "from": "src/components/**",
+            "target": "src/utils/**"
+          },
+          // folder1以外で呼ぶとエラー
+          {
+            "from": "src/2.ts",
+            "target": "src/folders/!(folder1)/**"
+          }
+        ]
+      }
+    ]
+  }
 }
